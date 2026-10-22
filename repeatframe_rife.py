@@ -30,7 +30,7 @@ def create():
     knob = nuke.Double_Knob('tolerance', 'Repeat tolerance')
     node.addKnob(knob)
     knob.setRange(0, 0.01)
-    knob.setValue(0)
+    knob.setValue(0.002)
     knob.setTooltip('Mean absolute RGB difference in the input format. 0 detects exact repeats. Increase cautiously for compressed video; real static shots can also match.')
     knob = nuke.Boolean_Knob('use_gpu', 'RIFE GPU')
     node.addKnob(knob)
