@@ -132,6 +132,10 @@ def _build(node, runs):
                 pair.setInput(1, endpoints[1])
                 pair['which'].setExpression('frame < 2 ? 0 : 1')
                 # External Cattery RIFE stays a separate dependency.
+                # createNode inserts into selected branches and can silently
+                # rewire earlier Fill switches. Isolate each gizmo creation.
+                for child in repair.nodes():
+                    child['selected'].setValue(False)
                 rife = nuke.createNode('RIFE', inpanel=False)
                 rife.setInput(0, pair)
                 rife['in'].setValue(1)

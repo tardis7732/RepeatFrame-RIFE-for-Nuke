@@ -67,5 +67,20 @@ for sequence, expected_runs, expected_trailing in [
         result = json.loads(node['analysis_json'].value())
         assert [(r['left'],r['right']) for r in result['runs']] == expected_runs, result
         assert result['trailing'] == expected_trailing, result
+        repair = node.node('Repair')
+        for i, run in enumerate(result['runs']):
+            patch = repair.node('Fill_%d_%d' % (run['start'], run['end']))
+            rife = patch.input(1)
+            assert rife.Class() == 'RIFE'
+            assert rife.input(0) == repair.node('EndpointPair_%d' % i)
+            pair = rife.input(0)
+            assert pair.input(0) == repair.node('left_%d' % run['left'])
+            assert pair.input(1) == repair.node('right_%d' % run['right'])
+            nuke.frame(run['start'])
+            left = sequence[run['left']-1]/10.0
+            right = sequence[run['right']-1]/10.0
+            alpha = (run['start']-run['left'])/(run['right']-run['left'])
+            value = nuke.sample(node, 'red', 64, 64)
+            assert abs(value-(left+(right-left)*alpha)) < .035, (run,value)
     nuke.delete(outer)
 print('REPEATFRAME_INTEGRATION_PASS')
